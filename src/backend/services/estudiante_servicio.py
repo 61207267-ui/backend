@@ -1,28 +1,42 @@
-from ..schemas.estudiante import Estudiante
+from sqlalchemy.orm import Session
+from ..models.estudiante_model import EstudianteModel
+from ..schemas.estudiante import EstudianteCreate
 
 class EstudianteServicio:
-    def __init__(self):
-        self.listaEstudiantes: list[Estudiante] = []
 
-    def guardar(self, estudianteNuevo: Estudiante):
-        self.listaEstudiantes.append(estudianteNuevo)
-        return estudianteNuevo
+    @staticmethod
+    def guardar(db: Session, estudianteNuevo: EstudianteCreate):
+        nuevo = EstudianteModel(
+            nombre=estudianteNuevo.nombre,
+            apellido=estudianteNuevo.apellido,
+            email=estudianteNuevo.email
+        )
+        db.add(nuevo)
+        db.commit()          # Guarda físicamente en SQL Server
+        db.refresh(nuevo)    # Obtiene el ID autogenerado
+        return nuevo
 
-    def mostrar(self):
-        return self.listaEstudiantes
+    @staticmethod
+    def mostrar(db: Session):
+        return db.query(EstudianteModel).all()
 
-    def actualizar(self, id: int, estudiante: Estudiante):
-        for _, valor in enumerate(self.listaEstudiantes):
-            if valor.id == id:
-                valor.nombre = estudiante.nombre
-                valor.edad = estudiante.edad
-                valor.correo = estudiante.correo
-                return valor
+    @staticmethod
+    def actualizar(db: Session, id: int, estudiante: EstudianteCreate):
+        estudiante_db = db.query(EstudianteModel).filter(EstudianteModel.id == id).first()
+        if estudiante_db:
+            estudiante_db.nombre = estudiante.nombre
+            estudiante_db.apellido = estudiante.apellido
+            estudiante_db.email = estudiante.email
+            db.commit()
+            db.refresh(estudiante_db)
+            return estudiante_db
         return None
 
-    def eliminar(self, id: int):
-        for indice, valor in enumerate(self.listaEstudiantes):
-            if valor.id == id:
-                self.listaEstudiantes.pop(indice)
-                return id
+    @staticmethod
+    def eliminar(db: Session, id: int):
+        estudiante_db = db.query(EstudianteModel).filter(EstudianteModel.id == id).first()
+        if estudiante_db:
+            db.delete(estudiante_db)
+            db.commit()
+            return id
         return None
