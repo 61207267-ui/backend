@@ -12,10 +12,10 @@ class EstudianteServicio:
             email=estudianteNuevo.email
         )
         db.add(nuevo)
-        db.commit()          # Guarda físicamente en SQL Server
-        db.refresh(nuevo)    # Obtiene el ID autogenerado
+        db.commit()         
+        db.refresh(nuevo)    
         return nuevo
-
+        
     @staticmethod
     def mostrar(db: Session):
         return db.query(EstudianteModel).all()
