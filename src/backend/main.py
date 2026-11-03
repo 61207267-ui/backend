@@ -1,8 +1,18 @@
 from fastapi import FastAPI
-from .apis.estudiante_api import router
-from .apis.home_api import router as home_router
+from fastapi.middleware.cors import CORSMiddleware
 
 
-app = FastAPI()
-app.include_router(home_router)
-app.include_router(router=router, prefix='/api')
+from .apis.usuario_api import usuario_router
+
+app = FastAPI(title="API Clínica Pariona")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+app.include_router(usuario_router, prefix="/api")
