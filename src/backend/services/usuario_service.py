@@ -10,7 +10,7 @@ class UsuarioService:
     def registrar_usuario(self,datos_usuario: UsuarioRegistro)-> UsuarioModel:
         if self.usuario_repositorio.obtener_usuario_por_email(datos_usuario.email):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El correo electrónico ya está registrado")
-
+    
         if self.usuario_repositorio.obtener_usuario_por_dni(datos_usuario.dni):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El DNI ya está registrado")
 
